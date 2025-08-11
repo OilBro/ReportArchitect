@@ -3,15 +3,79 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ClipboardCheck, Plus, FileText, Calendar, User } from "lucide-react";
-import { Link } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ClipboardCheck, Plus, FileText, Calendar, User, Check } from "lucide-react";
+import { Link, useLocation } from "wouter";
 
 export default function Home() {
+  const [location, setLocation] = useLocation();
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["/api/reports"],
   });
 
   const recentReports = reports.slice(0, 5);
+
+  const reportTemplates = [
+    {
+      id: 'routine-inspection',
+      name: 'Routine Inspection',
+      description: 'Standard API 653 routine inspection for atmospheric storage tanks',
+      fields: {
+        service: 'Crude Oil',
+        plateSpec: 'A516 Grade 70',
+        designPressure: 2.5,
+        age: 10,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report documents the routine API 653 inspection performed on the atmospheric storage tank. The inspection included visual examination, ultrasonic thickness measurements, and assessment of tank components in accordance with API 653 standards.',
+      }
+    },
+    {
+      id: 'out-of-service',
+      name: 'Out-of-Service Inspection',
+      description: 'Comprehensive internal inspection with tank out of service',
+      fields: {
+        service: 'Gasoline',
+        plateSpec: 'A36',
+        designPressure: 2.0,
+        age: 15,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report provides the results of the comprehensive out-of-service inspection. The tank was emptied, cleaned, and thoroughly inspected including bottom plate scanning, shell thickness measurements, and roof evaluation.',
+      }
+    },
+    {
+      id: 'five-year-external',
+      name: '5-Year External Inspection',
+      description: 'External inspection as per API 653 5-year requirement',
+      fields: {
+        service: 'Diesel',
+        plateSpec: 'A572 Grade 50',
+        designPressure: 1.5,
+        age: 5,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report covers the 5-year external inspection performed while the tank remained in service. Visual inspection, external thickness measurements, and foundation assessment were completed.',
+      }
+    },
+    {
+      id: 'repair-assessment',
+      name: 'Repair Assessment',
+      description: 'Post-repair inspection and fitness-for-service evaluation',
+      fields: {
+        service: 'Water',
+        plateSpec: 'A283 Grade C',
+        designPressure: 1.0,
+        age: 20,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report documents the inspection following repair work on the tank. All repairs were inspected and evaluated for compliance with API 653 repair standards. Fitness-for-service calculations confirm the tank is suitable for continued operation.',
+      }
+    }
+  ];
+
+  const handleSelectTemplate = (template: any) => {
+    // Navigate to report builder with template data
+    setLocation(`/report-builder?template=${template.id}`);
+    setShowTemplatesModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -37,7 +101,7 @@ export default function Home() {
                 Create New Report
               </Button>
             </Link>
-            <Button size="lg" variant="outline">
+            <Button size="lg" variant="outline" onClick={() => setShowTemplatesModal(true)}>
               <FileText className="h-5 w-5 mr-2" />
               View Templates
             </Button>
@@ -163,6 +227,60 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Templates Modal */}
+      <Dialog open={showTemplatesModal} onOpenChange={setShowTemplatesModal}>
+        <DialogContent className="sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Report Templates</DialogTitle>
+            <DialogDescription>
+              Select a template to quickly start a new inspection report with pre-configured settings
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            {reportTemplates.map((template) => (
+              <Card 
+                key={template.id} 
+                className="cursor-pointer hover:shadow-lg transition-shadow border-gray-200 hover:border-primary"
+                onClick={() => handleSelectTemplate(template)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-gray-900">{template.name}</h3>
+                    <FileText className="h-5 w-5 text-primary" />
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                  <div className="space-y-1 text-xs text-gray-500">
+                    <div className="flex items-center">
+                      <Check className="h-3 w-3 mr-1 text-green-500" />
+                      Service: {template.fields.service}
+                    </div>
+                    <div className="flex items-center">
+                      <Check className="h-3 w-3 mr-1 text-green-500" />
+                      Material: {template.fields.plateSpec}
+                    </div>
+                    <div className="flex items-center">
+                      <Check className="h-3 w-3 mr-1 text-green-500" />
+                      Age: {template.fields.age} years
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-3 hover:bg-primary hover:text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSelectTemplate(template);
+                    }}
+                  >
+                    Use This Template
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

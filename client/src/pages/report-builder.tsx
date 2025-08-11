@@ -33,12 +33,17 @@ export default function ReportBuilder() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Extract report ID from URL params if present
+  // Extract report ID or template from URL params if present
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
     const reportId = urlParams.get('id');
+    const templateId = urlParams.get('template');
+    
     if (reportId) {
       setSelectedReportId(reportId);
+    } else if (templateId) {
+      // Handle template selection
+      handleTemplateSelect(templateId);
     }
   }, [location]);
 
@@ -76,6 +81,60 @@ export default function ReportBuilder() {
 
   const handleCreateReport = () => {
     setShowNewReportModal(true);
+  };
+
+  const handleTemplateSelect = (templateId: string) => {
+    const templates: Record<string, any> = {
+      'routine-inspection': {
+        reportNumber: 'RPT-' + new Date().getFullYear() + '-001',
+        tankId: 'TK-001',
+        service: 'Crude Oil',
+        plateSpec: 'A516 Grade 70',
+        designPressure: 2.5,
+        age: 10,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report documents the routine API 653 inspection performed on the atmospheric storage tank. The inspection included visual examination, ultrasonic thickness measurements, and assessment of tank components in accordance with API 653 standards.',
+      },
+      'out-of-service': {
+        reportNumber: 'RPT-' + new Date().getFullYear() + '-002',
+        tankId: 'TK-002',
+        service: 'Gasoline',
+        plateSpec: 'A36',
+        designPressure: 2.0,
+        age: 15,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report provides the results of the comprehensive out-of-service inspection. The tank was emptied, cleaned, and thoroughly inspected including bottom plate scanning, shell thickness measurements, and roof evaluation.',
+      },
+      'five-year-external': {
+        reportNumber: 'RPT-' + new Date().getFullYear() + '-003',
+        tankId: 'TK-003',
+        service: 'Diesel',
+        plateSpec: 'A572 Grade 50',
+        designPressure: 1.5,
+        age: 5,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report covers the 5-year external inspection performed while the tank remained in service. Visual inspection, external thickness measurements, and foundation assessment were completed.',
+      },
+      'repair-assessment': {
+        reportNumber: 'RPT-' + new Date().getFullYear() + '-004',
+        tankId: 'TK-004',
+        service: 'Water',
+        plateSpec: 'A283 Grade C',
+        designPressure: 1.0,
+        age: 20,
+        inspectorCertification: 'API 653 Certified',
+        coverText: 'This report documents the inspection following repair work on the tank. All repairs were inspected and evaluated for compliance with API 653 repair standards. Fitness-for-service calculations confirm the tank is suitable for continued operation.',
+      }
+    };
+
+    const template = templates[templateId];
+    if (template) {
+      setNewReportData({
+        reportNumber: template.reportNumber,
+        tankId: template.tankId,
+      });
+      setShowNewReportModal(true);
+    }
   };
 
   const handleSubmitNewReport = () => {
