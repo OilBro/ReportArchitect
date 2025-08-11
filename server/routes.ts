@@ -264,6 +264,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Tank History routes
+  app.get("/api/reports/:reportId/tank-history", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const report = await storage.getReport(reportId);
+      // Return tank history data from report's customFields field
+      const tankHistory = report?.customFields?.tankHistory || {};
+      res.json(tankHistory);
+    } catch (error) {
+      console.error("Error fetching tank history:", error);
+      res.status(500).json({ error: "Failed to fetch tank history" });
+    }
+  });
+
+  app.put("/api/reports/:reportId/tank-history", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const tankHistoryData = req.body;
+      
+      // Get existing report
+      const report = await storage.getReport(reportId);
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      // Update customFields with tank history
+      const updatedReport = await storage.updateReport(reportId, {
+        customFields: {
+          ...(report.customFields || {}),
+          tankHistory: tankHistoryData
+        }
+      });
+      
+      res.json(tankHistoryData);
+    } catch (error) {
+      console.error("Error updating tank history:", error);
+      res.status(500).json({ error: "Failed to update tank history" });
+    }
+  });
+
   // Writeup routes
   app.get("/api/reports/:reportId/writeup", async (req, res) => {
     try {

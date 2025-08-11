@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/ui/app-header";
 import { ReportSelector } from "@/components/report/report-selector";
 import { NavigationSidebar, TabType } from "@/components/report/navigation-sidebar";
 import { BaseDataForm } from "@/components/report/base-data-form";
+import { TankHistoryForm } from "@/components/report/tank-history-form";
 import { AppendicesForm } from "@/components/report/appendices-form";
 import { ComponentCMLForm } from "@/components/report/component-cml-form";
 import { CalculationsForm } from "@/components/report/calculations-form";
@@ -232,10 +233,30 @@ export default function ReportBuilder() {
     switch (activeTab) {
       case 'base-data':
         return <BaseDataForm reportId={selectedReportId} unitSet={unitSet} />;
+      case 'tank-history':
+        return <TankHistoryForm reportId={selectedReportId} />;
       case 'appendices':
         return <AppendicesForm reportId={selectedReportId} />;
       case 'component-cml':
         return <ComponentCMLForm reportId={selectedReportId} />;
+      case 'shell-inspection':
+        return (
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Shell Inspection</h2>
+              <p className="text-gray-600">Shell inspection data and thickness measurements will be available here.</p>
+            </CardContent>
+          </Card>
+        );
+      case 'bottom-inspection':
+        return (
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Bottom Inspection</h2>
+              <p className="text-gray-600">Bottom inspection data and corrosion mapping will be available here.</p>
+            </CardContent>
+          </Card>
+        );
       case 'calculations':
         return <CalculationsForm reportId={selectedReportId} />;
       case 'writeup':

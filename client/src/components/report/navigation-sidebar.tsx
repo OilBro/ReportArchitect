@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Home, FolderOpen, Table, Calculator, Edit, Save, Eye, Printer } from "lucide-react";
+import { Home, FolderOpen, Table, Calculator, Edit, Save, Eye, Printer, FileText, Layers, CircleCheck } from "lucide-react";
 
-export type TabType = 'base-data' | 'appendices' | 'component-cml' | 'calculations' | 'writeup';
+export type TabType = 'base-data' | 'tank-history' | 'appendices' | 'component-cml' | 'calculations' | 'writeup' | 'shell-inspection' | 'bottom-inspection';
 
 interface NavigationSidebarProps {
   activeTab: TabType;
@@ -21,8 +21,11 @@ export function NavigationSidebar({
 }: NavigationSidebarProps) {
   const tabs = [
     { id: 'base-data' as TabType, label: 'Base Data', icon: Home },
+    { id: 'tank-history' as TabType, label: 'Tank History', icon: FileText },
     { id: 'appendices' as TabType, label: 'Appendices', icon: FolderOpen },
     { id: 'component-cml' as TabType, label: 'Component CML', icon: Table },
+    { id: 'shell-inspection' as TabType, label: 'Shell Inspection', icon: Layers },
+    { id: 'bottom-inspection' as TabType, label: 'Bottom Inspection', icon: CircleCheck },
     { id: 'calculations' as TabType, label: 'Calculations', icon: Calculator },
     { id: 'writeup' as TabType, label: 'Write-up', icon: Edit },
   ];
