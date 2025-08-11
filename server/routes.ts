@@ -75,6 +75,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Save report endpoint
+  app.post("/api/reports/:id/save", async (req, res) => {
+    try {
+      const report = await storage.getReportWithDetails(req.params.id);
+      res.json({ success: true, report });
+    } catch (error) {
+      console.error("Error saving report:", error);
+      res.status(500).json({ error: "Failed to save report" });
+    }
+  });
+
   // Appendix routes
   app.get("/api/reports/:reportId/appendices", async (req, res) => {
     try {

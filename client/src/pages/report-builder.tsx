@@ -54,7 +54,7 @@ export default function ReportBuilder() {
     }
   }, [selectedReportId, setLocation]);
 
-  const { data: currentReport } = useQuery({
+  const { data: currentReport } = useQuery<any>({
     queryKey: ["/api/reports", selectedReportId],
     enabled: !!selectedReportId,
   });
@@ -63,7 +63,7 @@ export default function ReportBuilder() {
     mutationFn: async (data: { reportNumber: string; tankId: string; unitSet: string }) => {
       return apiRequest("POST", "/api/reports", data);
     },
-    onSuccess: (newReport) => {
+    onSuccess: (newReport: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
       setSelectedReportId(newReport.id);
       setShowNewReportModal(false);
@@ -153,6 +153,23 @@ export default function ReportBuilder() {
     });
   };
 
+  const saveCurrentReport = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", `/api/reports/${selectedReportId}/save`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/reports", selectedReportId] });
+      toast({ title: "Report saved successfully" });
+    },
+    onError: (error) => {
+      toast({ 
+        title: "Error saving report", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
+  });
+
   const handleSave = async () => {
     if (!selectedReportId) {
       toast({
@@ -163,8 +180,7 @@ export default function ReportBuilder() {
       return;
     }
 
-    // Trigger save on the current form
-    toast({ title: "Report saved successfully" });
+    saveCurrentReport.mutate();
   };
 
   const handlePreview = () => {
@@ -189,7 +205,11 @@ export default function ReportBuilder() {
       return;
     }
     
-    toast({ title: "Print functionality will be implemented" });
+    // Open preview modal in print mode
+    setShowPreviewModal(true);
+    setTimeout(() => {
+      window.print();
+    }, 500);
   };
 
   const renderMainContent = () => {
