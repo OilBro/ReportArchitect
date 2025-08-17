@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Home, FolderOpen, Table, Calculator, Edit, Save, Eye, Printer, FileText, Layers, CircleCheck } from "lucide-react";
 
-export type TabType = 'base-data' | 'tank-history' | 'appendices' | 'component-cml' | 'calculations' | 'writeup' | 'shell-inspection' | 'bottom-inspection';
+export type TabType = 'base-data' | 'tank-history' | 'appendices' | 'component-cml' | 'nozzle-cml' | 'shell-calculations' | 'roof-calculations' | 'floor-calculations' | 'settlement-survey' | 'shell-inspection' | 'bottom-inspection' | 'calculations' | 'writeup';
 
 interface NavigationSidebarProps {
   activeTab: TabType;
@@ -24,9 +24,14 @@ export function NavigationSidebar({
     { id: 'tank-history' as TabType, label: 'Tank History', icon: FileText },
     { id: 'appendices' as TabType, label: 'Appendices', icon: FolderOpen },
     { id: 'component-cml' as TabType, label: 'Component CML', icon: Table },
-    { id: 'shell-inspection' as TabType, label: 'Shell Inspection', icon: Layers },
-    { id: 'bottom-inspection' as TabType, label: 'Bottom Inspection', icon: CircleCheck },
-    { id: 'calculations' as TabType, label: 'Calculations', icon: Calculator },
+    { id: 'nozzle-cml' as TabType, label: 'Nozzle CML', icon: CircleCheck },
+    { id: 'shell-calculations' as TabType, label: 'Shell Calc', icon: Calculator },
+    { id: 'roof-calculations' as TabType, label: 'Roof Calc', icon: Layers },
+    { id: 'floor-calculations' as TabType, label: 'Floor MRT', icon: Layers },
+    { id: 'settlement-survey' as TabType, label: 'Settlement', icon: CircleCheck },
+    { id: 'shell-inspection' as TabType, label: 'Shell Insp', icon: Layers },
+    { id: 'bottom-inspection' as TabType, label: 'Bottom Insp', icon: CircleCheck },
+    { id: 'calculations' as TabType, label: 'Other Calc', icon: Calculator },
     { id: 'writeup' as TabType, label: 'Write-up', icon: Edit },
   ];
 
