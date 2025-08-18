@@ -125,6 +125,26 @@ export const writeups = pgTable("writeups", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const settlementSurveys = pgTable("settlement_surveys", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reportId: varchar("report_id").notNull(),
+  surveyDate: timestamp("survey_date").notNull(),
+  previousSurveyDate: timestamp("previous_survey_date"),
+  datum: varchar("datum").notNull().default('MSL'),
+  numberOfPoints: integer("number_of_points").notNull().default(8),
+  elevationPoints: jsonb("elevation_points").notNull().$type<any[]>().default([]),
+  maxSettlement: decimal("max_settlement", { precision: 8, scale: 4 }).notNull().default('0'),
+  minSettlement: decimal("min_settlement", { precision: 8, scale: 4 }).notNull().default('0'),
+  differentialSettlement: decimal("differential_settlement", { precision: 8, scale: 4 }).notNull().default('0'),
+  tiltPercentage: decimal("tilt_percentage", { precision: 6, scale: 3 }).notNull().default('0'),
+  planarTilt: decimal("planar_tilt", { precision: 6, scale: 3 }).notNull().default('0'),
+  uniformSettlement: decimal("uniform_settlement", { precision: 8, scale: 4 }).notNull().default('0'),
+  outOfPlaneSettlement: decimal("out_of_plane_settlement", { precision: 8, scale: 4 }).notNull().default('0'),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const reportsRelations = relations(reports, ({ one, many }) => ({
   owner: one(users, {
@@ -209,6 +229,12 @@ export const insertWriteupSchema = createInsertSchema(writeups).omit({
   updatedAt: true,
 });
 
+export const insertSettlementSurveySchema = createInsertSchema(settlementSurveys).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -230,3 +256,6 @@ export type PracticalTmin = typeof practicalTmins.$inferSelect;
 
 export type InsertWriteup = z.infer<typeof insertWriteupSchema>;
 export type Writeup = typeof writeups.$inferSelect;
+
+export type InsertSettlementSurvey = z.infer<typeof insertSettlementSurveySchema>;
+export type SettlementSurvey = typeof settlementSurveys.$inferSelect;

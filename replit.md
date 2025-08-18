@@ -8,6 +8,22 @@ This application is a professional API 653 inspection report builder designed fo
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (January 17, 2025)
+
+### Settlement Survey Feature Implementation
+- Added comprehensive Settlement Survey module with elevation point tracking
+- Implemented API 653 compliance calculations for differential settlement and tilt analysis
+- Created visual charts using Recharts library (line charts and polar radar views)
+- Added automatic calculation of:
+  - Maximum and minimum settlement values
+  - Differential settlement measurements
+  - Tilt percentage and planar tilt angle
+  - Uniform and out-of-plane settlement
+  - API 653 limit compliance checking (1% tilt limit)
+- Supports 8, 12, 16, or 24 measurement points around tank circumference
+- Includes elevation data comparison between previous and current surveys
+- Visual analysis with settlement profile charts and polar distribution views
+
 ## System Architecture
 
 ### Frontend Architecture

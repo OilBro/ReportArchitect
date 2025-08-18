@@ -445,6 +445,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Settlement Survey routes
+  app.get("/api/settlement-survey/:reportId", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const report = await storage.getReport(reportId);
+      const settlementData = report?.customFields?.settlementSurvey || null;
+      res.json(settlementData);
+    } catch (error) {
+      console.error("Error fetching settlement survey:", error);
+      res.status(500).json({ error: "Failed to fetch settlement survey" });
+    }
+  });
+
+  app.post("/api/settlement-survey", async (req, res) => {
+    try {
+      const settlementData = req.body;
+      const { reportId } = settlementData;
+      
+      const report = await storage.getReport(reportId);
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      const updatedReport = await storage.updateReport(reportId, {
+        customFields: {
+          ...(report.customFields || {}),
+          settlementSurvey: settlementData
+        }
+      });
+      
+      res.json(settlementData);
+    } catch (error) {
+      console.error("Error saving settlement survey:", error);
+      res.status(500).json({ error: "Failed to save settlement survey" });
+    }
+  });
+
+  app.patch("/api/settlement-survey/:id", async (req, res) => {
+    try {
+      const settlementData = req.body;
+      const { reportId } = settlementData;
+      
+      const report = await storage.getReport(reportId);
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      const updatedReport = await storage.updateReport(reportId, {
+        customFields: {
+          ...(report.customFields || {}),
+          settlementSurvey: settlementData
+        }
+      });
+      
+      res.json(settlementData);
+    } catch (error) {
+      console.error("Error updating settlement survey:", error);
+      res.status(500).json({ error: "Failed to update settlement survey" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

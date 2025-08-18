@@ -15,6 +15,7 @@ import { WriteupForm } from "@/components/report/writeup-form";
 import { ShellCalculationsForm } from "@/components/report/shell-calculations";
 import { RoofCalculationsForm } from "@/components/report/roof-calculations";
 import { FloorMRTCalculationsForm } from "@/components/report/floor-mrt-calculations";
+import { SettlementSurveyForm } from "@/components/report/settlement-survey";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -258,14 +259,7 @@ export default function ReportBuilder() {
       case 'floor-calculations':
         return <FloorMRTCalculationsForm reportId={selectedReportId} />;
       case 'settlement-survey':
-        return (
-          <Card>
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Settlement Survey</h2>
-              <p className="text-gray-600">Tank settlement survey calculations will be available here.</p>
-            </CardContent>
-          </Card>
-        );
+        return <SettlementSurveyForm reportId={selectedReportId} />;
       case 'shell-inspection':
         return (
           <Card>
