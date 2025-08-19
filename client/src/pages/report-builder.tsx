@@ -16,6 +16,8 @@ import { ShellCalculationsForm } from "@/components/report/shell-calculations";
 import { RoofCalculationsForm } from "@/components/report/roof-calculations";
 import { FloorMRTCalculationsForm } from "@/components/report/floor-mrt-calculations";
 import { SettlementSurveyForm } from "@/components/report/settlement-survey";
+import { NozzleCMLForm } from "@/components/report/nozzle-cml-form";
+import { ReportGenerator } from "@/components/report/report-generator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -244,14 +246,7 @@ export default function ReportBuilder() {
       case 'component-cml':
         return <ComponentCMLForm reportId={selectedReportId} />;
       case 'nozzle-cml':
-        return (
-          <Card>
-            <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Nozzle CML Records</h2>
-              <p className="text-gray-600">Nozzle corrosion monitoring location records will be available here.</p>
-            </CardContent>
-          </Card>
-        );
+        return <NozzleCMLForm reportId={selectedReportId} />;
       case 'shell-calculations':
         return <ShellCalculationsForm reportId={selectedReportId} />;
       case 'roof-calculations':
@@ -282,6 +277,8 @@ export default function ReportBuilder() {
         return <CalculationsForm reportId={selectedReportId} />;
       case 'writeup':
         return <WriteupForm reportId={selectedReportId} />;
+      case 'report-generation':
+        return <ReportGenerator reportId={selectedReportId} />;
       default:
         return <BaseDataForm reportId={selectedReportId} unitSet={unitSet} />;
     }

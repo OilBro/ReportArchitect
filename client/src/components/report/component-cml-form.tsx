@@ -6,12 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Save, Copy, FileDown, Printer } from "lucide-react";
+import { Plus, Edit, Trash2, Save, Copy, FileDown, Printer, Upload, Download } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { COMPONENT_OPTIONS, CMLRecord } from "@/types/report";
 import { calculateCorrosionRate, formatThickness, formatCorrosionRate, formatRemainingLife, getRemainingLifeBadgeColor } from "@/lib/calculations";
+import * as XLSX from 'xlsx';
 
 interface ComponentCMLFormProps {
   reportId?: string;
@@ -117,6 +118,82 @@ export function ComponentCMLForm({ reportId }: ComponentCMLFormProps) {
     return `CML-${nextNumber}`;
   };
 
+  // Excel import function
+  const handleExcelImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = event.target?.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        // Process each row from Excel
+        for (const row of jsonData) {
+          const cmlData = {
+            cmlId: row['CML ID'] || generateAutoId(),
+            component: row['Component'] || '',
+            location: row['Location'] || '',
+            previousReading: parseFloat(row['Previous Reading'] || 0),
+            currentReading: parseFloat(row['Current Reading'] || 0),
+            practicalTmin: parseFloat(row['Practical tMin'] || 0.125),
+            corrosionRate: parseFloat(row['Corrosion Rate'] || 0),
+            remainingLife: parseFloat(row['Remaining Life'] || 0),
+            notes: row['Notes'] || '',
+          };
+          
+          if (cmlData.component && cmlData.location) {
+            await createCmlMutation.mutateAsync(cmlData);
+          }
+        }
+        
+        toast({
+          title: "Import Successful",
+          description: `Imported ${jsonData.length} CML records from Excel`,
+        });
+      } catch (error) {
+        toast({
+          title: "Import Failed",
+          description: "Failed to parse Excel file. Please check the format.",
+          variant: "destructive",
+        });
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  // Excel export function
+  const handleExcelExport = () => {
+    const exportData = cmlRecords.map((record: any) => ({
+      'CML ID': record.cmlId,
+      'Component': record.component,
+      'Location': record.location,
+      'Previous Reading': record.previousReading || '',
+      'Current Reading': record.currentReading || '',
+      'Practical tMin': record.practicalTmin || 0.125,
+      'Corrosion Rate': record.corrosionRate || '',
+      'Remaining Life': record.remainingLife || '',
+      'Notes': record.notes || '',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Component CML Records');
+    
+    // Generate filename with report ID and date
+    const filename = `component-cml-${reportId}-${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    
+    toast({
+      title: "Export Successful",
+      description: `Exported ${cmlRecords.length} CML records to Excel`,
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -125,10 +202,31 @@ export function ComponentCMLForm({ reportId }: ComponentCMLFormProps) {
             <h2 className="text-lg font-semibold text-gray-900">Component Corrosion Monitoring Locations</h2>
             <p className="text-sm text-gray-600 mt-1">Manage thickness measurement locations and data</p>
           </div>
-          <Button onClick={handleCreateCml} className="bg-primary hover:bg-primary/90">
-            <Plus className="h-4 w-4 mr-2" />
-            Add CML
-          </Button>
+          <div className="flex gap-2">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleExcelImport}
+              style={{ display: 'none' }}
+              id="cml-excel-import"
+            />
+            <label htmlFor="cml-excel-import">
+              <Button variant="outline" size="sm" asChild>
+                <span>
+                  <Upload className="h-4 w-4 mr-1" />
+                  Import Excel
+                </span>
+              </Button>
+            </label>
+            <Button onClick={handleExcelExport} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1" />
+              Export Excel
+            </Button>
+            <Button onClick={handleCreateCml} className="bg-primary hover:bg-primary/90">
+              <Plus className="h-4 w-4 mr-2" />
+              Add CML
+            </Button>
+          </div>
         </div>
       </CardHeader>
 

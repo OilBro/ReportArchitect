@@ -506,6 +506,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Nozzle CML routes
+  app.get("/api/nozzle-cml/:reportId", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const report = await storage.getReport(reportId);
+      const nozzleCMLData = report?.customFields?.nozzleCML || null;
+      res.json(nozzleCMLData);
+    } catch (error) {
+      console.error("Error fetching nozzle CML:", error);
+      res.status(500).json({ error: "Failed to fetch nozzle CML data" });
+    }
+  });
+
+  app.post("/api/nozzle-cml", async (req, res) => {
+    try {
+      const nozzleData = req.body;
+      const { reportId } = nozzleData;
+      
+      const report = await storage.getReport(reportId);
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      const updatedReport = await storage.updateReport(reportId, {
+        customFields: {
+          ...(report.customFields || {}),
+          nozzleCML: nozzleData
+        }
+      });
+      
+      res.json(nozzleData);
+    } catch (error) {
+      console.error("Error saving nozzle CML:", error);
+      res.status(500).json({ error: "Failed to save nozzle CML data" });
+    }
+  });
+
+  app.patch("/api/nozzle-cml/:id", async (req, res) => {
+    try {
+      const nozzleData = req.body;
+      const { reportId } = nozzleData;
+      
+      const report = await storage.getReport(reportId);
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      const updatedReport = await storage.updateReport(reportId, {
+        customFields: {
+          ...(report.customFields || {}),
+          nozzleCML: nozzleData
+        }
+      });
+      
+      res.json(nozzleData);
+    } catch (error) {
+      console.error("Error updating nozzle CML:", error);
+      res.status(500).json({ error: "Failed to update nozzle CML data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

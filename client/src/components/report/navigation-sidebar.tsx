@@ -33,6 +33,7 @@ export function NavigationSidebar({
     { id: 'bottom-inspection' as TabType, label: 'Bottom Insp', icon: CircleCheck },
     { id: 'calculations' as TabType, label: 'Other Calc', icon: Calculator },
     { id: 'writeup' as TabType, label: 'Write-up', icon: Edit },
+    { id: 'report-generation' as TabType, label: 'Generate Reports', icon: FileText },
   ];
 
   return (
