@@ -8,9 +8,15 @@ This application is a professional API 653 inspection report builder designed fo
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (January 17, 2025)
+## Recent Changes (January 20, 2025)
 
-### Settlement Survey Feature Implementation
+### Critical Save Functionality Fix
+- **FIXED CRITICAL BUG**: Report save endpoint was not actually updating data, causing complete data loss
+- Modified `/api/reports/:id/save` endpoint to properly persist form data to database
+- Ensures all entered inspection data is correctly saved and retrievable
+- Resolves 500 error "Failed to update report" that was preventing any data persistence
+
+### Settlement Survey Feature Implementation (January 17, 2025)
 - Added comprehensive Settlement Survey module with elevation point tracking
 - Implemented API 653 compliance calculations for differential settlement and tilt analysis
 - Created visual charts using Recharts library (line charts and polar radar views)

@@ -78,7 +78,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Save report endpoint
   app.post("/api/reports/:id/save", async (req, res) => {
     try {
-      const report = await storage.getReportWithDetails(req.params.id);
+      const { id } = req.params;
+      const updateData = req.body;
+      
+      // Actually update the report with the data from the request body
+      const updatedReport = await storage.updateReport(id, updateData);
+      
+      // Then fetch the complete report with details
+      const report = await storage.getReportWithDetails(id);
       res.json({ success: true, report });
     } catch (error) {
       console.error("Error saving report:", error);
