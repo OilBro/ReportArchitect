@@ -42,12 +42,12 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: report, isLoading } = useQuery({
+  const { data: report, isLoading } = useQuery<any>({
     queryKey: ["/api/reports", reportId],
     enabled: !!reportId,
   });
 
-  const { data: practicalTmins = [] } = useQuery({
+  const { data: practicalTmins = [] } = useQuery<PracticalTmin[]>({
     queryKey: ["/api/reports", reportId, "practical-tmins"],
     enabled: !!reportId,
   });
