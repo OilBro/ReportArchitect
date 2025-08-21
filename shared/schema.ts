@@ -42,6 +42,12 @@ export const reports = pgTable("reports", {
   coverText: text("cover_text"),
   customFields: jsonb("custom_fields").$type<Record<string, string>>(),
   
+  // Report content fields
+  findings: text("findings"),
+  reportWriteUp: text("report_write_up"),
+  recommendations: text("recommendations"),
+  notes: text("notes"),
+  
   // File uploads
   logoUrl: text("logo_url"),
   signatureUrl: text("signature_url"),
