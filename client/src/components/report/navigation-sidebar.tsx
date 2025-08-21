@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Home, FolderOpen, Table, Calculator, Edit, Save, Eye, Printer, FileText, Layers, CircleCheck } from "lucide-react";
 
-export type TabType = 'base-data' | 'tank-history' | 'appendices' | 'component-cml' | 'nozzle-cml' | 'shell-calculations' | 'roof-calculations' | 'floor-calculations' | 'settlement-survey' | 'shell-inspection' | 'bottom-inspection' | 'calculations' | 'writeup';
+export type TabType = 'base-data' | 'tank-history' | 'appendices' | 'report-content' | 'component-cml' | 'nozzle-cml' | 'shell-calculations' | 'roof-calculations' | 'floor-calculations' | 'settlement-survey' | 'shell-inspection' | 'bottom-inspection' | 'calculations' | 'writeup' | 'report-generation';
 
 interface NavigationSidebarProps {
   activeTab: TabType;
@@ -23,6 +23,7 @@ export function NavigationSidebar({
     { id: 'base-data' as TabType, label: 'Base Data', icon: Home },
     { id: 'tank-history' as TabType, label: 'Tank History', icon: FileText },
     { id: 'appendices' as TabType, label: 'Appendices', icon: FolderOpen },
+    { id: 'report-content' as TabType, label: 'Report Content', icon: FileText },
     { id: 'component-cml' as TabType, label: 'Component CML', icon: Table },
     { id: 'nozzle-cml' as TabType, label: 'Nozzle CML', icon: CircleCheck },
     { id: 'shell-calculations' as TabType, label: 'Shell Calc', icon: Calculator },

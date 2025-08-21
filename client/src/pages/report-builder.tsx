@@ -9,6 +9,7 @@ import { NavigationSidebar, TabType } from "@/components/report/navigation-sideb
 import { BaseDataForm } from "@/components/report/base-data-form";
 import { TankHistoryForm } from "@/components/report/tank-history-form";
 import { AppendicesForm } from "@/components/report/appendices-form";
+import { ReportContentForm } from "@/components/report/report-content-form";
 import { ComponentCMLForm } from "@/components/report/component-cml-form";
 import { CalculationsForm } from "@/components/report/calculations-form";
 import { WriteupForm } from "@/components/report/writeup-form";
@@ -243,6 +244,8 @@ export default function ReportBuilder() {
         return <TankHistoryForm reportId={selectedReportId} />;
       case 'appendices':
         return <AppendicesForm reportId={selectedReportId} />;
+      case 'report-content':
+        return <ReportContentForm reportId={selectedReportId} currentReport={currentReport} />;
       case 'component-cml':
         return <ComponentCMLForm reportId={selectedReportId} />;
       case 'nozzle-cml':

@@ -18,7 +18,7 @@ export function WriteupForm({ reportId }: WriteupFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: writeup, isLoading } = useQuery({
+  const { data: writeup, isLoading } = useQuery<Writeup | undefined>({
     queryKey: ["/api/reports", reportId, "writeup"],
     enabled: !!reportId,
   });
@@ -35,10 +35,10 @@ export function WriteupForm({ reportId }: WriteupFormProps) {
   useEffect(() => {
     if (writeup) {
       form.reset({
-        summary: writeup.summary || "",
-        findings: writeup.findings || "",
-        recommendations: writeup.recommendations || "",
-        conclusions: writeup.conclusions || "",
+        summary: writeup?.summary || "",
+        findings: writeup?.findings || "",
+        recommendations: writeup?.recommendations || "",
+        conclusions: writeup?.conclusions || "",
       });
     }
   }, [writeup, form]);
