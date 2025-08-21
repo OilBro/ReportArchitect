@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""
+Shell Calculation Verification Script
+Verifies the accuracy of API 653 shell calculations from Report Architect
+"""
+
+import math
+
+def verify_shell_calculations():
+    """Verify shell calculations using API 653 formulas"""
+    
+    print("=== API 653 Shell Calculation Verification ===\n")
+    
+    # Input parameters from Report Architect test
+    fill_height = 40  # ft
+    specific_gravity = 1.0
+    diameter = 120  # ft (from Base Data)
+    joint_efficiency = 0.85  # Spot radiographed
+    
+    # Course 1 data
+    course_height = 8  # ft
+    material_stress = 26700  # psi (A36)
+    original_thickness = 0.500  # inches
+    current_thickness = 0.485  # inches
+    
+    print(f"Input Parameters:")
+    print(f"- Fill Height: {fill_height} ft")
+    print(f"- Specific Gravity: {specific_gravity}")
+    print(f"- Tank Diameter: {diameter} ft")
+    print(f"- Joint Efficiency: {joint_efficiency}")
+    print(f"- Course Height: {course_height} ft")
+    print(f"- Material Stress: {material_stress} psi")
+    print(f"- Original Thickness: {original_thickness} in")
+    print(f"- Current Thickness: {current_thickness} in")
+    print()
+    
+    # Calculate hydrostatic pressure at bottom of Course 1
+    # P = 0.433 * SG * H (psi)
+    hydrostatic_pressure = 0.433 * specific_gravity * fill_height
+    print(f"Hydrostatic Pressure at Bottom: {hydrostatic_pressure:.2f} psi")
+    
+    # Calculate required thickness using API 653 formula
+    # t = (P * R) / (S * E - 0.6 * P)
+    # Where: P = pressure, R = radius, S = stress, E = joint efficiency
+    radius = diameter * 12 / 2  # Convert to inches
+    required_thickness = (hydrostatic_pressure * radius) / (material_stress * joint_efficiency - 0.6 * hydrostatic_pressure)
+    print(f"Required Thickness: {required_thickness:.3f} in")
+    
+    # Calculate minimum thickness (required + corrosion allowance)
+    corrosion_allowance = 0.100  # inches (typical)
+    minimum_thickness = required_thickness + corrosion_allowance
+    print(f"Minimum Thickness (with CA): {minimum_thickness:.3f} in")
+    
+    # Calculate corrosion rate
+    # Assuming 10 years from Base Data input
+    years = 10
+    thickness_loss = original_thickness - current_thickness
+    corrosion_rate = (thickness_loss / years) * 1000  # mpy (mils per year)
+    print(f"Thickness Loss: {thickness_loss:.3f} in over {years} years")
+    print(f"Corrosion Rate: {corrosion_rate:.1f} mpy")
+    
+    # Report Architect Results (from screenshot)
+    ra_min_thickness = 0.100
+    ra_corrosion_rate = 0.75
+    
+    print(f"\n=== Comparison with Report Architect Results ===")
+    print(f"Minimum Thickness:")
+    print(f"  Calculated: {minimum_thickness:.3f} in")
+    print(f"  Report Architect: {ra_min_thickness:.3f} in")
+    print(f"  Match: {'✅ YES' if abs(minimum_thickness - ra_min_thickness) < 0.01 else '❌ NO'}")
+    
+    print(f"\nCorrosion Rate:")
+    print(f"  Calculated: {corrosion_rate:.1f} mpy")
+    print(f"  Report Architect: {ra_corrosion_rate:.1f} mpy")
+    print(f"  Match: {'✅ YES' if abs(corrosion_rate - ra_corrosion_rate) < 0.1 else '❌ NO'}")
+    
+    # Overall assessment
+    thickness_match = abs(minimum_thickness - ra_min_thickness) < 0.01
+    corrosion_match = abs(corrosion_rate - ra_corrosion_rate) < 0.1
+    
+    print(f"\n=== OVERALL ASSESSMENT ===")
+    if thickness_match and corrosion_match:
+        print("✅ CALCULATIONS CORRECT - Report Architect calculations are accurate")
+    else:
+        print("❌ CALCULATIONS INCORRECT - Report Architect has calculation errors")
+        
+    return thickness_match and corrosion_match
+
+if __name__ == "__main__":
+    verify_shell_calculations()
+
