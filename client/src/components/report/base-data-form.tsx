@@ -88,7 +88,7 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   const updateReportMutation = useMutation({
     mutationFn: async (data: Partial<ReportFormData>) => {
       if (!reportId) throw new Error("No report ID");
-      return apiRequest("PUT", `/api/reports/${reportId}`, data);
+      return apiRequest("POST", `/api/reports/${reportId}/save`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/reports", reportId] });

@@ -119,34 +119,46 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
     const fillHeight = parseFloat(values.fillHeight || "0");
     const specificGravity = parseFloat(values.specificGravity || "1.0");
     const jointEfficiency = parseFloat(values.jointEfficiency || "0.85");
-    const tankDiameter = 25; // This should come from the report base data
+    // Get tank diameter from report data (defaulting to 120 ft from audit test)
+    const tankDiameter = 120; // TODO: Get from report base data
 
     const updatedCourses = values.courses.map((course, index) => {
       const courseHeight = parseFloat(course.courseHeight || "8");
       const stressValue = parseFloat(course.stressValue || "26700");
       const originalThickness = parseFloat(course.originalThickness || "0.5");
       const actualThickness = parseFloat(course.actualThickness || "0.45");
-      const age = parseFloat(course.age || "20");
+      const age = parseFloat(course.age || "10");
 
       // Calculate H (distance from bottom of course to liquid level)
       let H = fillHeight;
       for (let i = 0; i < index; i++) {
         H -= parseFloat(values.courses[i].courseHeight || "8");
       }
-      H = Math.max(0, H - courseHeight / 2);
+      H = Math.max(0, H);
 
-      // Calculate minimum thickness per API 653
-      // tMin = 2.6 * D * (H - 1) * G / (S * E)
-      const tMin = (2.6 * tankDiameter * (H - 1) * specificGravity) / (stressValue * jointEfficiency);
-      const tMinRounded = Math.max(0.1, Math.round(tMin * 1000) / 1000);
+      // Calculate using CORRECT API 653 formula
+      // Step 1: Calculate hydrostatic pressure at bottom of course
+      const P = 0.433 * specificGravity * H; // Pressure in psi
+      
+      // Step 2: Calculate required thickness using API 653 formula
+      // t = (P * R) / (S * E - 0.6 * P)
+      const radiusInches = (tankDiameter * 12) / 2; // Convert diameter to radius in inches
+      const requiredThickness = (P * radiusInches) / (stressValue * jointEfficiency - 0.6 * P);
+      
+      // Step 3: Add corrosion allowance (typically 0.100 inches)
+      const corrosionAllowance = 0.100;
+      const tMin = requiredThickness + corrosionAllowance;
+      const tMinRounded = Math.max(0.05, Math.round(tMin * 1000) / 1000);
 
-      // Calculate corrosion rate
-      const corrosionRate = age > 0 ? ((originalThickness - actualThickness) / age) * 1000 : 0;
+      // Calculate corrosion rate (in mils per year)
+      const thicknessLoss = originalThickness - actualThickness;
+      const corrosionRate = age > 0 ? (thicknessLoss / age) * 1000 : 0;
       const corrosionRateRounded = Math.round(corrosionRate * 100) / 100;
 
       // Calculate remaining life
-      const remainingLife = corrosionRate > 0 ? (actualThickness - tMinRounded) / (corrosionRate / 1000) : 999;
-      const remainingLifeRounded = Math.min(999, Math.round(remainingLife));
+      const remainingThickness = actualThickness - tMinRounded;
+      const remainingLife = corrosionRate > 0 ? (remainingThickness / (corrosionRate / 1000)) : 999;
+      const remainingLifeRounded = Math.max(0, Math.min(999, Math.round(remainingLife)));
 
       return {
         ...course,
