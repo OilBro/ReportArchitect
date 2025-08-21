@@ -28,12 +28,12 @@ export function ComponentCMLForm({ reportId }: ComponentCMLFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: report } = useQuery({
+  const { data: report } = useQuery<any>({
     queryKey: ["/api/reports", reportId],
     enabled: !!reportId,
   });
 
-  const { data: cmlRecords = [] } = useQuery({
+  const { data: cmlRecords = [] } = useQuery<any[]>({
     queryKey: ["/api/reports", reportId, "cml-records"],
     enabled: !!reportId,
   });

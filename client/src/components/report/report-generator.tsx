@@ -19,52 +19,52 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
   const [generatingWord, setGeneratingWord] = useState(false);
 
   // Fetch all report data
-  const { data: report } = useQuery({
+  const { data: report } = useQuery<any>({
     queryKey: ["/api/reports", reportId],
     enabled: !!reportId,
   });
 
-  const { data: cmlRecords = [] } = useQuery({
+  const { data: cmlRecords = [] } = useQuery<any[]>({
     queryKey: ["/api/reports", reportId, "cml-records"],
     enabled: !!reportId,
   });
 
-  const { data: nozzleCML } = useQuery({
+  const { data: nozzleCML } = useQuery<any>({
     queryKey: ['/api/nozzle-cml', reportId],
     enabled: !!reportId,
   });
 
-  const { data: appendices = [] } = useQuery({
+  const { data: appendices = [] } = useQuery<any[]>({
     queryKey: ["/api/reports", reportId, "appendices"],
     enabled: !!reportId,
   });
 
-  const { data: writeup } = useQuery({
+  const { data: writeup } = useQuery<any>({
     queryKey: ["/api/reports", reportId, "writeup"],
     enabled: !!reportId,
   });
 
-  const { data: tankHistory } = useQuery({
+  const { data: tankHistory } = useQuery<any>({
     queryKey: ["/api/reports", reportId, "tank-history"],
     enabled: !!reportId,
   });
 
-  const { data: shellCalcs } = useQuery({
+  const { data: shellCalcs } = useQuery<any>({
     queryKey: ["/api/reports", reportId, "shell-calculations"],
     enabled: !!reportId,
   });
 
-  const { data: roofCalcs } = useQuery({
+  const { data: roofCalcs } = useQuery<any>({
     queryKey: ["/api/reports", reportId, "roof-calculations"],
     enabled: !!reportId,
   });
 
-  const { data: floorCalcs } = useQuery({
+  const { data: floorCalcs } = useQuery<any>({
     queryKey: ["/api/reports", reportId, "floor-mrt-calculations"],
     enabled: !!reportId,
   });
 
-  const { data: settlementData } = useQuery({
+  const { data: settlementData } = useQuery<any>({
     queryKey: ['/api/settlement-survey', reportId],
     enabled: !!reportId,
   });
@@ -90,7 +90,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
 
       // Title Page
       pdf.setFontSize(24);
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont('helvetica', 'bold');
       pdf.text('API 653 INSPECTION REPORT', pageWidth / 2, yPosition, { align: 'center' });
       
       yPosition += 15;
@@ -99,7 +99,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
       
       yPosition += 10;
       pdf.setFontSize(14);
-      pdf.setFont(undefined, 'normal');
+      pdf.setFont('helvetica', 'normal');
       pdf.text(`Report Number: ${report.reportNumber || 'N/A'}`, pageWidth / 2, yPosition, { align: 'center' });
       
       yPosition += 10;
@@ -115,12 +115,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
       pdf.addPage();
       yPosition = 20;
       pdf.setFontSize(18);
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont('helvetica', 'bold');
       pdf.text('TABLE OF CONTENTS', 20, yPosition);
       
       yPosition += 15;
       pdf.setFontSize(12);
-      pdf.setFont(undefined, 'normal');
+      pdf.setFont('helvetica', 'normal');
       const contents = [
         '1. Executive Summary',
         '2. Tank Information',
@@ -144,12 +144,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
       pdf.addPage();
       yPosition = 20;
       pdf.setFontSize(16);
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont('helvetica', 'bold');
       pdf.text('1. EXECUTIVE SUMMARY', 20, yPosition);
       
       yPosition += 10;
       pdf.setFontSize(11);
-      pdf.setFont(undefined, 'normal');
+      pdf.setFont('helvetica', 'normal');
       
       if (writeup?.summary) {
         const summaryLines = pdf.splitTextToSize(writeup.summary, pageWidth - 40);
@@ -164,7 +164,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
       pdf.addPage();
       yPosition = 20;
       pdf.setFontSize(16);
-      pdf.setFont(undefined, 'bold');
+      pdf.setFont('helvetica', 'bold');
       pdf.text('2. TANK INFORMATION', 20, yPosition);
       
       yPosition += 10;
@@ -196,12 +196,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('3. TANK HISTORY', 20, yPosition);
         
         yPosition += 10;
         pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
+        pdf.setFont('helvetica', 'normal');
         
         const historyData = [
           ['Construction Date', tankHistory.constructionDate || 'N/A'],
@@ -225,7 +225,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('4. SHELL THICKNESS DATA', 20, yPosition);
         
         yPosition += 10;
@@ -253,7 +253,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('5. COMPONENT CML RECORDS', 20, yPosition);
         
         yPosition += 10;
@@ -282,7 +282,7 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('6. NOZZLE CML RECORDS', 20, yPosition);
         
         yPosition += 10;
@@ -312,12 +312,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('7. SETTLEMENT SURVEY', 20, yPosition);
         
         yPosition += 10;
         pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
+        pdf.setFont('helvetica', 'normal');
         
         // Summary data
         pdf.text(`Survey Date: ${settlementData.surveyDate || 'N/A'}`, 20, yPosition);
@@ -353,12 +353,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('8. RECOMMENDATIONS', 20, yPosition);
         
         yPosition += 10;
         pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
+        pdf.setFont('helvetica', 'normal');
         
         const recommendationLines = pdf.splitTextToSize(writeup.recommendations, pageWidth - 40);
         pdf.text(recommendationLines, 20, yPosition);
@@ -369,12 +369,12 @@ export function ReportGenerator({ reportId }: ReportGeneratorProps) {
         pdf.addPage();
         yPosition = 20;
         pdf.setFontSize(16);
-        pdf.setFont(undefined, 'bold');
+        pdf.setFont('helvetica', 'bold');
         pdf.text('9. CONCLUSIONS', 20, yPosition);
         
         yPosition += 10;
         pdf.setFontSize(11);
-        pdf.setFont(undefined, 'normal');
+        pdf.setFont('helvetica', 'normal');
         
         const conclusionLines = pdf.splitTextToSize(writeup.conclusions, pageWidth - 40);
         pdf.text(conclusionLines, 20, yPosition);

@@ -1,0 +1,59 @@
+diff --git a/shared/schema.ts b/shared/schema.ts
+index 47613aa246eccdf9c15cd7ae66c8568a271c0636..fefe63b7725861277a82616ec10e2099b0d9a749 100644
+--- a/shared/schema.ts
++++ b/shared/schema.ts
+@@ -17,50 +17,54 @@ export const inspectionReports = pgTable("inspection_reports", {
+   createdAt: text("created_at"),
+   updatedAt: text("updated_at"),
+   // Professional report fields
+   customer: text("customer"),
+   location: text("location"),
+   inspectionScope: text("inspection_scope"),
+   reviewer: text("reviewer"),
+   specificGravity: text("specific_gravity"),
+   yearBuilt: text("year_built"),
+   manufacturer: text("manufacturer"),
+   constructionStandard: text("construction_standard"),
+   shellMaterial: text("shell_material"),
+   foundationType: text("foundation_type"),
+   roofType: text("roof_type"),
+   capacity: text("capacity"),
+   coatingCondition: text("coating_condition"),
+   foundationSettlement: text("foundation_settlement"),
+   foundationCracking: text("foundation_cracking"),
+   foundationSealing: text("foundation_sealing"),
+   maxSettlement: text("max_settlement"),
+   settlementLocation: text("settlement_location"),
+   settlementCompliance: text("settlement_compliance"),
+   surveyMethod: text("survey_method"),
+   inspectorCertification: text("inspector_certification"),
+   inspectorExperience: text("inspector_experience"),
++  findings: text("findings"),
++  reportWriteUp: text("report_write_up"),
++  recommendations: text("recommendations"),
++  notes: text("notes"),
+ });
+ 
+ export const thicknessMeasurements = pgTable("thickness_measurements", {
+   id: serial("id").primaryKey(),
+   reportId: integer("report_id"),
+   component: text("component"),
+   measurementType: text("measurement_type"), // shell, bottom_plate, internal_annular, critical_zone, roof, internal_component, external_repad, nozzle, flange, chime
+   location: text("location"),
+   elevation: text("elevation"),
+   gridReference: text("grid_reference"), // For bottom plate grids (A1, B2, etc.)
+   plateNumber: text("plate_number"), // Bottom plate identification
+   annularRingPosition: text("annular_ring_position"), // Inner, outer, center for annular readings
+   criticalZoneType: text("critical_zone_type"), // Settlement, corrosion, repair area
+   repadNumber: text("repad_number"), // External repad identification
+   repadType: text("repad_type"), // Full face, partial, reinforcement
+   repadThickness: decimal("repad_thickness", { precision: 10, scale: 3 }), // Thickness of repad material
+   nozzleId: text("nozzle_id"), // Nozzle identification (N1, N2, etc.)
+   nozzleSize: text("nozzle_size"), // Nozzle diameter
+   flangeClass: text("flange_class"), // ANSI flange class
+   flangeType: text("flange_type"), // Weld neck, slip-on, blind, etc.
+   originalThickness: decimal("original_thickness", { precision: 10, scale: 3 }),
+   currentThickness: decimal("current_thickness", { precision: 10, scale: 3 }),
+   corrosionRate: decimal("corrosion_rate", { precision: 10, scale: 4 }),
+   remainingLife: decimal("remaining_life", { precision: 10, scale: 1 }),
+   status: text("status"), // acceptable, monitor, action_required
