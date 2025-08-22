@@ -81,6 +81,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const updateData = req.body;
       
+      // Convert date string to Date object if present
+      if (updateData.inspectionDate) {
+        updateData.inspectionDate = new Date(updateData.inspectionDate);
+      }
+      
       // Actually update the report with the data from the request body
       const updatedReport = await storage.updateReport(id, updateData);
       
