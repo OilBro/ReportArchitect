@@ -70,17 +70,23 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
       specificGravity: "1.0",
       jointEfficiency: "0.85",
       courses: [
-        { courseNumber: 1, courseHeight: "8", material: "A36", stressValue: "26700" },
-        { courseNumber: 2, courseHeight: "8", material: "A36", stressValue: "26700" },
-        { courseNumber: 3, courseHeight: "8", material: "A36", stressValue: "26700" },
-        { courseNumber: 4, courseHeight: "8", material: "A36", stressValue: "26700" },
-        { courseNumber: 5, courseHeight: "8", material: "A36", stressValue: "26700" },
+        { courseNumber: 1, courseHeight: "8", material: "A36", stressValue: "26700", age: "10" },
+        { courseNumber: 2, courseHeight: "8", material: "A36", stressValue: "26700", age: "10" },
+        { courseNumber: 3, courseHeight: "8", material: "A36", stressValue: "26700", age: "10" },
+        { courseNumber: 4, courseHeight: "8", material: "A36", stressValue: "26700", age: "10" },
+        { courseNumber: 5, courseHeight: "8", material: "A36", stressValue: "26700", age: "10" },
       ],
       notes: "",
     },
   });
 
-  // Load existing data
+  // Load report base data to get tank diameter
+  const { data: reportData } = useQuery<any>({
+    queryKey: ["/api/reports", reportId],
+    enabled: !!reportId,
+  });
+
+  // Load existing shell calculations data
   const { data: savedData } = useQuery({
     queryKey: [`/api/reports/${reportId}/shell-calculations`],
     enabled: !!reportId,
@@ -119,8 +125,8 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
     const fillHeight = parseFloat(values.fillHeight || "0");
     const specificGravity = parseFloat(values.specificGravity || "1.0");
     const jointEfficiency = parseFloat(values.jointEfficiency || "0.85");
-    // Get tank diameter from report data (defaulting to 120 ft from audit test)
-    const tankDiameter = 120; // TODO: Get from report base data
+    // Get tank diameter from report base data
+    const tankDiameter = reportData?.nominalDiameter ? parseFloat(reportData.nominalDiameter) : 120;
 
     const updatedCourses = values.courses.map((course, index) => {
       const courseHeight = parseFloat(course.courseHeight || "8");
@@ -298,6 +304,7 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
                       <TableHead>Stress (psi)</TableHead>
                       <TableHead>t Original</TableHead>
                       <TableHead>t Actual</TableHead>
+                      <TableHead>Age (yrs)</TableHead>
                       <TableHead>t Min</TableHead>
                       <TableHead>CR (mpy)</TableHead>
                       <TableHead>RL (yrs)</TableHead>
@@ -377,6 +384,18 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
                             }}
                             placeholder="0.450"
                             className="w-20"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            value={course.age}
+                            onChange={(e) => {
+                              const courses = form.getValues("courses");
+                              courses[index].age = e.target.value;
+                              form.setValue("courses", courses);
+                            }}
+                            placeholder="10"
+                            className="w-16"
                           />
                         </TableCell>
                         <TableCell>{course.tMin || "-"}</TableCell>

@@ -88,7 +88,7 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   const updateReportMutation = useMutation({
     mutationFn: async (data: Partial<ReportFormData>) => {
       if (!reportId) throw new Error("No report ID");
-      return apiRequest("POST", `/api/reports/${reportId}/save`, data);
+      return apiRequest(`/api/reports/${reportId}/save`, "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/reports", reportId] });
@@ -106,7 +106,7 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   const addPracticalTminMutation = useMutation({
     mutationFn: async (data: { component: string; size?: string; practicalTmin: number }) => {
       if (!reportId) throw new Error("No report ID");
-      return apiRequest("POST", `/api/reports/${reportId}/practical-tmins`, data);
+      return apiRequest(`/api/reports/${reportId}/practical-tmins`, "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/reports", reportId, "practical-tmins"] });
@@ -116,7 +116,7 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
 
   const deletePracticalTminMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest("DELETE", `/api/practical-tmins/${id}`);
+      return apiRequest(`/api/practical-tmins/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/reports", reportId, "practical-tmins"] });

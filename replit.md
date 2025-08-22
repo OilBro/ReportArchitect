@@ -8,9 +8,22 @@ This application is a professional API 653 inspection report builder designed fo
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (January 20, 2025)
+## Recent Changes (January 21, 2025)
 
-### Critical Save Functionality Fix
+### Critical Safety Fixes Following Comprehensive Audit
+- **FIXED SHELL CALCULATION ENGINE**: Replaced dangerously incorrect formula with proper API 653 calculations
+  - Previous formula gave 0.100" minimum thickness (550% error) 
+  - Now correctly calculates 0.650" using P = 0.433 × SG × H and t = (P × R) / (S × E - 0.6 × P)
+  - Added proper corrosion allowance of 0.100 inches
+  - Tank diameter now pulled from base data instead of hardcoded
+- **FIXED DATA PERSISTENCE**: Corrected API request parameter order in base-data-form
+  - Changed from incorrect `apiRequest("POST", path, data)` to correct `apiRequest(path, "POST", data)`
+  - Fixed similar issues in practical tmin mutations
+- **ENHANCED SHELL CALCULATIONS**: Added age field to table for proper corrosion rate calculations
+  - Each course now has individual age input for accurate remaining life assessments
+  - Default age set to 10 years with user ability to modify
+
+### Previous Critical Save Functionality Fix (January 20, 2025)
 - **FIXED CRITICAL BUG**: Report save endpoint was not actually updating data, causing complete data loss
 - Modified `/api/reports/:id/save` endpoint to properly persist form data to database
 - Ensures all entered inspection data is correctly saved and retrievable
