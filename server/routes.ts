@@ -86,6 +86,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updateData.inspectionDate = new Date(updateData.inspectionDate);
       }
       
+      // Ensure numeric fields are stored as strings (as per schema)
+      // The schema expects these as text fields, not numbers
+      if (updateData.nominalDiameter !== undefined) {
+        updateData.nominalDiameter = String(updateData.nominalDiameter);
+      }
+      if (updateData.shellHeight !== undefined) {
+        updateData.shellHeight = String(updateData.shellHeight);
+      }
+      if (updateData.designPressure !== undefined) {
+        updateData.designPressure = String(updateData.designPressure);
+      }
+      if (updateData.originalThickness !== undefined) {
+        updateData.originalThickness = String(updateData.originalThickness);
+      }
+      // Age is stored as integer
+      if (updateData.age !== undefined && updateData.age !== null) {
+        updateData.age = parseInt(updateData.age, 10) || null;
+      }
+      
       // Actually update the report with the data from the request body
       const updatedReport = await storage.updateReport(id, updateData);
       

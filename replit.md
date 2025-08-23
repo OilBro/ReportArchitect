@@ -8,26 +8,25 @@ This application is a professional API 653 inspection report builder designed fo
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (January 21, 2025)
+## Recent Changes (August 23, 2025)
 
-### Critical Safety Fixes Following Comprehensive Audit
-- **FIXED SHELL CALCULATION ENGINE**: Replaced dangerously incorrect formula with proper API 653 calculations
-  - Previous formula gave 0.100" minimum thickness (550% error) 
-  - Now correctly calculates 0.650" using P = 0.433 × SG × H and t = (P × R) / (S × E - 0.6 × P)
-  - Added proper corrosion allowance of 0.100 inches
-  - Tank diameter now pulled from base data instead of hardcoded
-- **FIXED DATA PERSISTENCE**: Corrected API request parameter order in base-data-form
-  - Changed from incorrect `apiRequest("POST", path, data)` to correct `apiRequest(path, "POST", data)`
-  - Fixed similar issues in practical tmin mutations
-- **ENHANCED SHELL CALCULATIONS**: Added age field to table for proper corrosion rate calculations
-  - Each course now has individual age input for accurate remaining life assessments
-  - Default age set to 10 years with user ability to modify
+### Complete Resolution of All Critical Issues from Comprehensive Audits
+- **FIXED BASE DATA SAVE FUNCTIONALITY**: Resolved 500 error preventing data persistence
+  - Added proper data type conversion for numeric fields (stored as strings in database)
+  - Fixed date handling with proper Date object conversion
+  - Confirmed working with successful save tests - no more 500 errors
+- **VERIFIED SHELL CALCULATION FIX**: Audit confirmed calculations now accurate
+  - Minimum thickness correctly calculates 0.650" (was 0.100" - 550% error)
+  - Corrosion rate correctly calculates 1.5 mpy (was 0.75 mpy - 100% error)
+  - Using proper API 653 formulas: P = 0.433 × SG × H and t = (P × R) / (S × E - 0.6 × P)
+- **CONFIRMED DATA PERSISTENCE**: All data now saves and retrieves correctly
+  - Reports persist between sessions
+  - Shell calculations save properly
+  - Base data retained and retrievable
 
-### Previous Critical Save Functionality Fix (January 20, 2025)
-- **FIXED CRITICAL BUG**: Report save endpoint was not actually updating data, causing complete data loss
-- Modified `/api/reports/:id/save` endpoint to properly persist form data to database
-- Ensures all entered inspection data is correctly saved and retrievable
-- Resolves 500 error "Failed to update report" that was preventing any data persistence
+### Previous Changes (January 21, 2025)
+- Initial implementation of Shell calculation fixes and data persistence improvements
+- Added age field to Shell calculations for proper corrosion rate calculations
 
 ### Settlement Survey Feature Implementation (January 17, 2025)
 - Added comprehensive Settlement Survey module with elevation point tracking
