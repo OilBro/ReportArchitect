@@ -103,7 +103,7 @@ export function RoofCalculationsForm({ reportId }: RoofCalculationsFormProps) {
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data: RoofCalculationData) => {
-      return apiRequest(`/api/reports/${reportId}/roof-calculations`, "PUT", data);
+      return apiRequest("PUT", `/api/reports/${reportId}/roof-calculations`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/reports/${reportId}/roof-calculations`] });

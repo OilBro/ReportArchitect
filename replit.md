@@ -10,6 +10,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (August 24, 2025 - Critical Issues Fixed)
 
+### Fixed Data Save Functionality Issue
+- **FIXED API REQUEST PARAMETER ORDER**: Corrected all apiRequest function calls
+  - Fixed incorrect parameter order (was url, method, data - now method, url, data)
+  - Base Data Form now saves correctly
+  - Shell, Roof, and Floor calculations all save properly
+  - All POST/PUT/DELETE operations now work with proper authentication
+
 ### Fixed All Three Critical User-Reported Issues
 - **FIXED INCORRECT CALCULATIONS**: Corrected API 653 shell thickness formula
   - Removed incorrect 0.100 inch corrosion allowance that was inflating minimum thickness

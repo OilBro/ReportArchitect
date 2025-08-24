@@ -112,7 +112,7 @@ export function FloorMRTCalculationsForm({ reportId }: FloorMRTCalculationsFormP
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data: FloorMRTCalculationData) => {
-      return apiRequest(`/api/reports/${reportId}/floor-mrt-calculations`, "PUT", data);
+      return apiRequest("PUT", `/api/reports/${reportId}/floor-mrt-calculations`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/reports/${reportId}/floor-mrt-calculations`] });

@@ -101,7 +101,7 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data: ShellCalculationData) => {
-      return apiRequest(`/api/reports/${reportId}/shell-calculations`, "PUT", data);
+      return apiRequest("PUT", `/api/reports/${reportId}/shell-calculations`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/reports/${reportId}/shell-calculations`] });
