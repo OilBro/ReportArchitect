@@ -149,12 +149,15 @@ export function ShellCalculationsForm({ reportId }: ShellCalculationsFormProps) 
       // Step 2: Calculate required thickness using API 653 formula
       // t = (P * R) / (S * E - 0.6 * P)
       const radiusInches = (tankDiameter * 12) / 2; // Convert diameter to radius in inches
-      const requiredThickness = (P * radiusInches) / (stressValue * jointEfficiency - 0.6 * P);
       
-      // Step 3: Add corrosion allowance (typically 0.100 inches)
-      const corrosionAllowance = 0.100;
-      const tMin = requiredThickness + corrosionAllowance;
-      const tMinRounded = Math.max(0.05, Math.round(tMin * 1000) / 1000);
+      // Ensure denominator is not negative or zero
+      const denominator = stressValue * jointEfficiency - 0.6 * P;
+      const requiredThickness = denominator > 0 ? (P * radiusInches) / denominator : 0;
+      
+      // Step 3: For API 653, minimum thickness should not include future corrosion allowance
+      // The calculated thickness IS the minimum required thickness
+      const tMin = requiredThickness;
+      const tMinRounded = Math.max(0.050, Math.round(tMin * 1000) / 1000);
 
       // Calculate corrosion rate (in mils per year)
       const thicknessLoss = originalThickness - actualThickness;

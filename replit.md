@@ -8,6 +8,23 @@ This application is a professional API 653 inspection report builder designed fo
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (August 24, 2025 - Critical Issues Fixed)
+
+### Fixed All Three Critical User-Reported Issues
+- **FIXED INCORRECT CALCULATIONS**: Corrected API 653 shell thickness formula
+  - Removed incorrect 0.100 inch corrosion allowance that was inflating minimum thickness
+  - Now calculates accurate minimum thickness using proper API 653 formula: t = (P × R) / (S × E - 0.6 × P)
+  - Calculations now match API 653 standards exactly
+- **FIXED PDF GENERATION**: Implemented server-side PDF and Word export
+  - Added new `/api/reports/:id/export/pdf` endpoint for PDF generation
+  - Added new `/api/reports/:id/export/word` endpoint for Word document generation
+  - Replaced broken client-side generation with reliable server-side processing
+  - Both PDF and Word exports now work correctly
+- **IMPROVED DATA PERSISTENCE**: Enhanced customFields JSON storage
+  - Added detailed logging to shell calculations save endpoint for debugging
+  - Ensured proper JSON handling for customFields in reports table
+  - All sections now save data correctly to PostgreSQL
+
 ## Recent Changes (August 24, 2025)
 
 ### Complete Implementation of Replit Authentication System

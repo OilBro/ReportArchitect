@@ -328,21 +328,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { reportId } = req.params;
       const shellCalcsData = req.body;
       
+      console.log("[SHELL CALC] Saving shell calculations for report:", reportId);
+      console.log("[SHELL CALC] Data to save:", JSON.stringify(shellCalcsData, null, 2));
+      
       const report = await storage.getReport(reportId);
       if (!report) {
+        console.error("[SHELL CALC] Report not found:", reportId);
         return res.status(404).json({ error: "Report not found" });
       }
       
+      // Ensure customFields is an object
+      const currentCustomFields = typeof report.customFields === 'object' && report.customFields !== null 
+        ? report.customFields 
+        : {};
+      
+      const updatedCustomFields = {
+        ...currentCustomFields,
+        shellCalculations: shellCalcsData
+      };
+      
+      console.log("[SHELL CALC] Updating customFields with:", JSON.stringify(updatedCustomFields, null, 2));
+      
       const updatedReport = await storage.updateReport(reportId, {
-        customFields: {
-          ...(report.customFields || {}),
-          shellCalculations: shellCalcsData
-        }
+        customFields: updatedCustomFields
       });
+      
+      console.log("[SHELL CALC] Successfully saved shell calculations");
+      
+      // Verify the save by fetching again
+      const verifyReport = await storage.getReport(reportId);
+      console.log("[SHELL CALC] Verification - saved data:", verifyReport?.customFields?.shellCalculations ? "Present" : "Missing");
       
       res.json(shellCalcsData);
     } catch (error) {
-      console.error("Error updating shell calculations:", error);
+      console.error("[SHELL CALC] Error updating shell calculations:", error);
       res.status(500).json({ error: "Failed to update shell calculations" });
     }
   });
@@ -613,6 +632,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+
+  // PDF Export endpoint
+  app.get("/api/reports/:reportId/export/pdf", isAuthenticated, async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const report = await storage.getReportWithDetails(reportId);
+      
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      // Generate PDF using jsPDF
+      const { jsPDF } = await import("jspdf");
+      await import("jspdf-autotable");
+      
+      const doc = new jsPDF();
+      
+      // Title Page
+      doc.setFontSize(20);
+      doc.text("API 653 Tank Inspection Report", 105, 30, { align: "center" });
+      doc.setFontSize(14);
+      doc.text(`Report Number: ${report.reportNumber || "N/A"}`, 20, 50);
+      doc.text(`Tank ID: ${report.tankId || "N/A"}`, 20, 60);
+      doc.text(`Inspection Date: ${report.inspectionDate ? new Date(report.inspectionDate).toLocaleDateString() : "N/A"}`, 20, 70);
+      
+      // Tank Information
+      doc.setFontSize(16);
+      doc.text("Tank Information", 20, 90);
+      doc.setFontSize(12);
+      doc.text(`Nominal Diameter: ${report.nominalDiameter || "N/A"} ft`, 20, 100);
+      doc.text(`Shell Height: ${report.shellHeight || "N/A"} ft`, 20, 110);
+      doc.text(`Service: ${report.service || "N/A"}`, 20, 120);
+      doc.text(`Plate Specification: ${report.plateSpec || "N/A"}`, 20, 130);
+      
+      // Shell Calculations
+      if (report.customFields?.shellCalculations?.courses) {
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.text("Shell Calculations", 20, 20);
+        
+        const shellData = report.customFields.shellCalculations.courses.map((course: any) => [
+          course.courseNumber,
+          course.actualThickness || "-",
+          course.tMin || "-",
+          course.corrosionRate || "-",
+          course.remainingLife || "-"
+        ]);
+        
+        (doc as any).autoTable({
+          head: [["Course", "Actual (in)", "t-min (in)", "CR (mpy)", "RL (yrs)"]],
+          body: shellData,
+          startY: 30
+        });
+      }
+      
+      // CML Records
+      if (report.cmlRecords && report.cmlRecords.length > 0) {
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.text("CML Records", 20, 20);
+        
+        const cmlData = report.cmlRecords.map((cml: any) => [
+          cml.cmlId || "-",
+          cml.component || "-",
+          cml.readingAvg || ((parseFloat(cml.reading1 || "0") + parseFloat(cml.reading2 || "0") + parseFloat(cml.reading3 || "0") + parseFloat(cml.reading4 || "0")) / 4).toFixed(3),
+          cml.corrosionRate || "-",
+          cml.remainingLife || "-"
+        ]);
+        
+        (doc as any).autoTable({
+          head: [["CML ID", "Component", "Avg Reading", "CR (mpy)", "RL (yrs)"]],
+          body: cmlData,
+          startY: 30
+        });
+      }
+      
+      // Findings and Recommendations
+      if (report.findings || report.recommendations) {
+        doc.addPage();
+        doc.setFontSize(16);
+        doc.text("Findings and Recommendations", 20, 20);
+        doc.setFontSize(12);
+        
+        if (report.findings) {
+          doc.text("Findings:", 20, 35);
+          const findings = doc.splitTextToSize(report.findings, 170);
+          doc.text(findings, 20, 45);
+        }
+        
+        if (report.recommendations) {
+          doc.text("Recommendations:", 20, 90);
+          const recommendations = doc.splitTextToSize(report.recommendations, 170);
+          doc.text(recommendations, 20, 100);
+        }
+      }
+      
+      // Generate PDF buffer
+      const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
+      
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="API653-Report-${report.reportNumber || reportId}.pdf"`);
+      res.send(pdfBuffer);
+      
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      res.status(500).json({ error: "Failed to generate PDF report" });
+    }
+  });
+  
+  // Word Export endpoint  
+  app.get("/api/reports/:reportId/export/word", isAuthenticated, async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const report = await storage.getReportWithDetails(reportId);
+      
+      if (!report) {
+        return res.status(404).json({ error: "Report not found" });
+      }
+      
+      // Generate Word document using docx
+      const { Document, Paragraph, TextRun, Table, TableRow, TableCell, HeadingLevel, AlignmentType } = await import("docx");
+      
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: "API 653 Tank Inspection Report", size: 32, bold: true })],
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Report Number: ${report.reportNumber || "N/A"}`, size: 24 })]
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Tank ID: ${report.tankId || "N/A"}`, size: 24 })]
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Inspection Date: ${report.inspectionDate ? new Date(report.inspectionDate).toLocaleDateString() : "N/A"}`, size: 24 })]
+            }),
+            new Paragraph({
+              text: "Tank Information",
+              heading: HeadingLevel.HEADING_1,
+              spacing: { before: 400, after: 200 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Nominal Diameter: ${report.nominalDiameter || "N/A"} ft` })]
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Shell Height: ${report.shellHeight || "N/A"} ft` })]
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: `Service: ${report.service || "N/A"}` })]
+            }),
+            new Paragraph({
+              text: "Findings",
+              heading: HeadingLevel.HEADING_1,
+              spacing: { before: 400, after: 200 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: report.findings || "No findings recorded." })]
+            }),
+            new Paragraph({
+              text: "Recommendations",
+              heading: HeadingLevel.HEADING_1,
+              spacing: { before: 400, after: 200 }
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: report.recommendations || "No recommendations recorded." })]
+            })
+          ]
+        }]
+      });
+      
+      const { Packer } = await import("docx");
+      const buffer = await Packer.toBuffer(doc);
+      
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      res.setHeader("Content-Disposition", `attachment; filename="API653-Report-${report.reportNumber || reportId}.docx"`);
+      res.send(buffer);
+      
+    } catch (error) {
+      console.error("Error generating Word document:", error);
+      res.status(500).json({ error: "Failed to generate Word report" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
