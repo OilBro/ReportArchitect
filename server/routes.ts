@@ -36,7 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/reports/:id", async (req, res) => {
+  app.get("/api/reports/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const report = await storage.getReportWithDetails(id);
@@ -67,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:id", async (req, res) => {
+  app.put("/api/reports/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -79,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/reports/:id", async (req, res) => {
+  app.delete("/api/reports/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deleteReport(id);
@@ -91,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Save report endpoint
-  app.post("/api/reports/:id/save", async (req, res) => {
+  app.post("/api/reports/:id/save", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -133,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Appendix routes
-  app.get("/api/reports/:reportId/appendices", async (req, res) => {
+  app.get("/api/reports/:reportId/appendices", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const appendices = await storage.getReportAppendices(reportId);
@@ -144,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/reports/:reportId/appendices", async (req, res) => {
+  app.post("/api/reports/:reportId/appendices", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const validatedData = insertAppendixSchema.parse({
@@ -162,7 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/appendices/:id", async (req, res) => {
+  app.put("/api/appendices/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -175,7 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // CML Record routes
-  app.get("/api/reports/:reportId/cml-records", async (req, res) => {
+  app.get("/api/reports/:reportId/cml-records", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const cmlRecords = await storage.getReportCmlRecords(reportId);
@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/reports/:reportId/cml-records", async (req, res) => {
+  app.post("/api/reports/:reportId/cml-records", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const validatedData = insertCmlRecordSchema.parse({
@@ -204,7 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/cml-records/:id", async (req, res) => {
+  app.put("/api/cml-records/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -216,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/cml-records/:id", async (req, res) => {
+  app.delete("/api/cml-records/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deleteCmlRecord(id);
@@ -228,7 +228,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Nozzle CML Record routes
-  app.get("/api/reports/:reportId/nozzle-cml-records", async (req, res) => {
+  app.get("/api/reports/:reportId/nozzle-cml-records", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const nozzleCmlRecords = await storage.getReportNozzleCmlRecords(reportId);
@@ -239,7 +239,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/reports/:reportId/nozzle-cml-records", async (req, res) => {
+  app.post("/api/reports/:reportId/nozzle-cml-records", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const validatedData = insertNozzleCmlRecordSchema.parse({
@@ -258,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Practical Tmin routes
-  app.get("/api/reports/:reportId/practical-tmins", async (req, res) => {
+  app.get("/api/reports/:reportId/practical-tmins", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const practicalTmins = await storage.getReportPracticalTmins(reportId);
@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/reports/:reportId/practical-tmins", async (req, res) => {
+  app.post("/api/reports/:reportId/practical-tmins", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const validatedData = insertPracticalTminSchema.parse({
@@ -287,7 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/practical-tmins/:id", async (req, res) => {
+  app.put("/api/practical-tmins/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       const updateData = req.body;
@@ -299,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/practical-tmins/:id", async (req, res) => {
+  app.delete("/api/practical-tmins/:id", isAuthenticated, async (req, res) => {
     try {
       const { id } = req.params;
       await storage.deletePracticalTmin(id);
@@ -311,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Shell Calculations routes
-  app.get("/api/reports/:reportId/shell-calculations", async (req, res) => {
+  app.get("/api/reports/:reportId/shell-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const report = await storage.getReport(reportId);
@@ -323,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:reportId/shell-calculations", async (req, res) => {
+  app.put("/api/reports/:reportId/shell-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const shellCalcsData = req.body;
@@ -348,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Roof Calculations routes
-  app.get("/api/reports/:reportId/roof-calculations", async (req, res) => {
+  app.get("/api/reports/:reportId/roof-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const report = await storage.getReport(reportId);
@@ -360,7 +360,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:reportId/roof-calculations", async (req, res) => {
+  app.put("/api/reports/:reportId/roof-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const roofCalcsData = req.body;
@@ -385,7 +385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Floor MRT Calculations routes
-  app.get("/api/reports/:reportId/floor-mrt-calculations", async (req, res) => {
+  app.get("/api/reports/:reportId/floor-mrt-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const report = await storage.getReport(reportId);
@@ -397,7 +397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:reportId/floor-mrt-calculations", async (req, res) => {
+  app.put("/api/reports/:reportId/floor-mrt-calculations", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const floorCalcsData = req.body;
@@ -422,7 +422,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tank History routes
-  app.get("/api/reports/:reportId/tank-history", async (req, res) => {
+  app.get("/api/reports/:reportId/tank-history", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const report = await storage.getReport(reportId);
@@ -435,7 +435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:reportId/tank-history", async (req, res) => {
+  app.put("/api/reports/:reportId/tank-history", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const tankHistoryData = req.body;
@@ -462,7 +462,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Writeup routes
-  app.get("/api/reports/:reportId/writeup", async (req, res) => {
+  app.get("/api/reports/:reportId/writeup", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const writeup = await storage.getReportWriteup(reportId);
@@ -473,7 +473,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/reports/:reportId/writeup", async (req, res) => {
+  app.put("/api/reports/:reportId/writeup", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const validatedData = insertWriteupSchema.parse({
@@ -492,7 +492,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Settlement Survey routes
-  app.get("/api/settlement-survey/:reportId", async (req, res) => {
+  app.get("/api/settlement-survey/:reportId", isAuthenticated, async (req, res) => {
     try {
       const { reportId } = req.params;
       const report = await storage.getReport(reportId);
@@ -504,7 +504,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/settlement-survey", async (req, res) => {
+  app.post("/api/settlement-survey", isAuthenticated, async (req, res) => {
     try {
       const settlementData = req.body;
       const { reportId } = settlementData;
