@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { 
   insertReportSchema, insertAppendixSchema, insertCmlRecordSchema, 
   insertNozzleCmlRecordSchema, insertPracticalTminSchema, insertWriteupSchema 
@@ -8,11 +9,25 @@ import {
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Report routes
-  app.get("/api/reports", async (req, res) => {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // For now, using a mock user ID - in production this would come from auth
-      const userId = "mock-user-id";
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Report routes - all protected with authentication
+  app.get("/api/reports", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
       const reports = await storage.getUserReports(userId);
       res.json(reports);
     } catch (error) {
@@ -35,11 +50,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/reports", async (req, res) => {
+  app.post("/api/reports", isAuthenticated, async (req: any, res) => {
     try {
       const validatedData = insertReportSchema.parse({
         ...req.body,
-        ownerId: "mock-user-id" // In production, get from auth
+        ownerId: req.user.claims.sub // Get user ID from authentication
       });
       const report = await storage.createReport(validatedData);
       res.status(201).json(report);

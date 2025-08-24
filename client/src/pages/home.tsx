@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ClipboardCheck, Plus, FileText, Calendar, User, Check } from "lucide-react";
+import { ClipboardCheck, Plus, FileText, Calendar, User, Check, LogOut } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const [location, setLocation] = useLocation();
   const [showTemplatesModal, setShowTemplatesModal] = useState(false);
+  const { user } = useAuth();
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["/api/reports"],
   });
@@ -79,6 +81,38 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Header with Logout */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <ClipboardCheck className="h-6 w-6 text-primary" />
+              <span className="font-semibold text-lg">API 653 Report Builder</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              {user && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <User className="h-5 w-5 text-gray-600" />
+                    <span className="text-sm text-gray-700">
+                      {user.email || user.firstName || "User"}
+                    </span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.location.href = "/api/logout"}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12">
