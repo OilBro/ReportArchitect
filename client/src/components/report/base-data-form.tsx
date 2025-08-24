@@ -88,13 +88,19 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   const updateReportMutation = useMutation({
     mutationFn: async (data: Partial<ReportFormData>) => {
       if (!reportId) throw new Error("No report ID");
-      return apiRequest(`/api/reports/${reportId}/save`, "POST", data);
+      console.log("[BASE DATA] Saving report data:", data);
+      const result = await apiRequest(`/api/reports/${reportId}/save`, "POST", data);
+      console.log("[BASE DATA] Save response:", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      console.log("[BASE DATA] Save successful:", response);
       queryClient.invalidateQueries({ queryKey: ["/api/reports", reportId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/reports"] });
       toast({ title: "Report saved successfully" });
     },
     onError: (error) => {
+      console.error("[BASE DATA] Save error:", error);
       toast({ 
         title: "Error saving report", 
         description: error.message,
@@ -125,6 +131,7 @@ export function BaseDataForm({ reportId, unitSet }: BaseDataFormProps) {
   });
 
   const onSubmit = (data: ReportFormData) => {
+    console.log("[BASE DATA] Form submitted with data:", data);
     updateReportMutation.mutate(data);
   };
 

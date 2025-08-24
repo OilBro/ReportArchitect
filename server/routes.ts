@@ -96,6 +96,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       const updateData = req.body;
       
+      console.log("[BASE DATA SAVE] Received save request for report:", id);
+      console.log("[BASE DATA SAVE] Data received:", JSON.stringify(updateData, null, 2));
+      
       // Convert date string to Date object if present
       if (updateData.inspectionDate) {
         updateData.inspectionDate = new Date(updateData.inspectionDate);
@@ -121,14 +124,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Actually update the report with the data from the request body
+      console.log("[BASE DATA SAVE] Calling storage.updateReport with processed data");
       const updatedReport = await storage.updateReport(id, updateData);
+      console.log("[BASE DATA SAVE] Update successful, report updated");
       
       // Then fetch the complete report with details
       const report = await storage.getReportWithDetails(id);
+      console.log("[BASE DATA SAVE] Successfully saved base data for report:", id);
       res.json({ success: true, report });
-    } catch (error) {
-      console.error("Error saving report:", error);
-      res.status(500).json({ error: "Failed to save report" });
+    } catch (error: any) {
+      console.error("[BASE DATA SAVE] Error saving report:", error);
+      console.error("[BASE DATA SAVE] Error stack:", error.stack);
+      res.status(500).json({ error: "Failed to save report", details: error.message });
     }
   });
 
