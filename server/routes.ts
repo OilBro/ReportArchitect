@@ -9,6 +9,19 @@ import {
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint
+  app.get('/api/health', (req, res) => {
+    res.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'unknown',
+      hasDatabase: !!process.env.DATABASE_URL,
+      hasSessionSecret: !!process.env.SESSION_SECRET,
+      hasReplId: !!process.env.REPL_ID,
+      hasDomains: !!process.env.REPLIT_DOMAINS,
+    });
+  });
+
   // Auth middleware
   await setupAuth(app);
 
