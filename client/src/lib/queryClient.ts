@@ -42,3 +42,30 @@ const getQueryClient = () => {
 };
 
 export const queryClient = getQueryClient();
+
+export const apiRequest = async (
+  method: string,
+  url: string,
+  data?: any
+): Promise<any> => {
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
+  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+    options.body = JSON.stringify(data);
+  }
+
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as any;
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json();
+};
