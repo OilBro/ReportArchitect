@@ -15,7 +15,10 @@ const makeQueryClient = () => {
         },
         queryFn: async ({ queryKey, signal }) => {
           const [url] = queryKey as [string];
-          const res = await fetch(url, { signal });
+          const res = await fetch(url, { 
+            signal,
+            credentials: 'include' // Include cookies for authentication
+          });
 
           if (!res.ok) {
             const error = new Error(`HTTP ${res.status}: ${res.statusText}`) as any;
@@ -53,6 +56,7 @@ export const apiRequest = async (
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include', // Include cookies for authentication
   };
 
   if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
