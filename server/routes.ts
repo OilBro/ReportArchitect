@@ -99,16 +99,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("[BASE DATA SAVE] Received save request for report:", id);
       console.log("[BASE DATA SAVE] Data received:", JSON.stringify(updateData, null, 2));
       
-      // Keep the date as a string if present - the database will handle the conversion
       // The date comes from the client as "YYYY-MM-DD" string format
-      if (updateData.inspectionDate && typeof updateData.inspectionDate === 'string') {
-        // Validate it's a valid date string
-        const dateValue = new Date(updateData.inspectionDate);
-        if (isNaN(dateValue.getTime())) {
-          console.error("[BASE DATA SAVE] Invalid date format:", updateData.inspectionDate);
-          delete updateData.inspectionDate; // Remove invalid date
-        }
-        // Keep it as string for the database to handle
+      // We'll pass it as-is to storage, which will handle the conversion
+      if (updateData.inspectionDate) {
+        console.log("[BASE DATA SAVE] Inspection date received:", updateData.inspectionDate);
       }
       
       // Ensure numeric fields are stored as strings (as per schema)

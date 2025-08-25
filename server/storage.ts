@@ -110,6 +110,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateReport(id: string, updateData: Partial<InsertReport>): Promise<Report> {
+    // Handle date conversion - if inspectionDate is a string, convert to Date
+    if (updateData.inspectionDate && typeof updateData.inspectionDate === 'string') {
+      updateData.inspectionDate = new Date(updateData.inspectionDate);
+    }
+    
     const [report] = await db
       .update(reports)
       .set({ ...updateData, updatedAt: new Date() })
